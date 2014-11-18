@@ -7,14 +7,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.flatironschool.codedemosqlite.Models.Dog;
+import com.flatironschool.codedemosqlite.db.DBOpenHelper;
 import com.flatironschool.codedemosqlite.db.DogDataSource;
-import com.flatironschool.codedemosqlite.db.DogOpenHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class PersonActivity extends ActionBarActivity {
+public class DogActivity extends ActionBarActivity {
 
     private DogDataSource mDataSource;
 
@@ -49,15 +49,17 @@ public class PersonActivity extends ActionBarActivity {
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
-            int nameIndex = cursor.getColumnIndex(DogOpenHelper.COLUMN_NAME);
-            int ageIndex = cursor.getColumnIndex(DogOpenHelper.COLUMN_AGE);
-            int breedIndex = cursor.getColumnIndex(DogOpenHelper.COLUMN_BREED);
+            int nameIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_NAME);
+            int ageIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_AGE);
+            int breedIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_BREED);
+            int idIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_ID);
 
             String name = cursor.getString(nameIndex);
             int age = cursor.getInt(ageIndex);
             String breed = cursor.getString(breedIndex);
+            int id = cursor.getInt(idIndex);
 
-            Dog dog = new Dog(name, age, breed);
+            Dog dog = new Dog(name, age, breed, id);
             dogs.add(dog);
 
             cursor.moveToNext();

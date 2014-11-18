@@ -12,16 +12,15 @@ import com.flatironschool.codedemosqlite.Models.Dog;
  */
 public class DogDataSource {
     private SQLiteDatabase mDatabase;
-    private DogOpenHelper mDogOpenHelper;
-    private Context mContext;
+    private DBOpenHelper mDBOpenHelper;
 
     public DogDataSource(Context context) {
-        mContext = context;
+        mDBOpenHelper = new DBOpenHelper(context);
     }
 
     //open Database
     public void open(){
-        mDatabase = mDogOpenHelper.getWritableDatabase();
+        mDatabase = mDBOpenHelper.getWritableDatabase();
     }
 
     //close Database
@@ -35,10 +34,10 @@ public class DogDataSource {
 
         try {
             ContentValues values = new ContentValues();
-            values.put(DogOpenHelper.COLUMN_NAME, dog.getName());
-            values.put(DogOpenHelper.COLUMN_AGE, dog.getAge());
-            values.put(DogOpenHelper.COLUMN_BREED, dog.getBreed());
-            mDatabase.insert(DogOpenHelper.TABLE_DOG, null, values);
+            values.put(DBOpenHelper.COLUMN_NAME, dog.getName());
+            values.put(DBOpenHelper.COLUMN_AGE, dog.getAge());
+            values.put(DBOpenHelper.COLUMN_BREED, dog.getBreed());
+            mDatabase.insert(DBOpenHelper.TABLE_DOG, null, values);
             mDatabase.setTransactionSuccessful();
         }finally {
             mDatabase.endTransaction();
@@ -47,11 +46,12 @@ public class DogDataSource {
 
     //Get all dogs
     public Cursor selectAllDogs(){
-        Cursor cursor = mDatabase.query(DogOpenHelper.TABLE_DOG,
+        Cursor cursor = mDatabase.query(DBOpenHelper.TABLE_DOG,
                 new String[]{
-                        DogOpenHelper.COLUMN_NAME,
-                        DogOpenHelper.COLUMN_BREED,
-                        DogOpenHelper.COLUMN_AGE},
+                        DBOpenHelper.COLUMN_ID,
+                        DBOpenHelper.COLUMN_NAME,
+                        DBOpenHelper.COLUMN_BREED,
+                        DBOpenHelper.COLUMN_AGE},
                 null, // Where clause
                 null, //Where Params
                 null, //GroupBy

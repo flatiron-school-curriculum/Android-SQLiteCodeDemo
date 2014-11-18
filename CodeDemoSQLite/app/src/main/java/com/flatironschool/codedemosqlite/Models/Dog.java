@@ -5,6 +5,7 @@ package com.flatironschool.codedemosqlite.Models;
  */
 public class Dog {
 
+    private int mId;
     private String mName;
     private int mAge;
     private String mBreed;
@@ -13,6 +14,13 @@ public class Dog {
         mName = name;
         mAge = age;
         mBreed = breed;
+    }
+
+    public Dog(String name, int age, String breed, int id) {
+        mName = name;
+        mAge = age;
+        mBreed = breed;
+        mId = id;
     }
 
     public String getName() {
@@ -25,5 +33,9 @@ public class Dog {
 
     public String getBreed() {
         return mBreed;
+    }
+
+    public int getId() {
+        return mId;
     }
 }
