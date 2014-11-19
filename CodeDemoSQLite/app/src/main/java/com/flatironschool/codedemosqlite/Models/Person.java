@@ -1,13 +1,17 @@
 package com.flatironschool.codedemosqlite.Models;
 
+import java.util.List;
+
 /**
  * Created by altyus on 11/18/14.
  */
 public class Person {
-    private int mId;
+    private long mId;
     private String name;
     private int age;
     private String address;
+
+    private List<Dog>dogs;
 
     public Person(String name, int age, String address) {
         this.name = name;
@@ -22,8 +26,20 @@ public class Person {
         this.address = address;
     }
 
-    public int getId() {
+    public long getId() {
         return mId;
+    }
+
+    public List<Dog> getDogs() {
+        return dogs;
+    }
+
+    public void setDogs(List<Dog> dogs) {
+        this.dogs = dogs;
+    }
+
+    public void setId(long id) {
+        mId = id;
     }
 
     public String getName() {

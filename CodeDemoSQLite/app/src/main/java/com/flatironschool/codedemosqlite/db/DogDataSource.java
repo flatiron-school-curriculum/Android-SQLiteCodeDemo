@@ -12,52 +12,38 @@ import com.flatironschool.codedemosqlite.Models.Dog;
  */
 public class DogDataSource {
     private SQLiteDatabase mDatabase;
-    private DBOpenHelper mDBOpenHelper;
 
-    public DogDataSource(Context context) {
-        mDBOpenHelper = new DBOpenHelper(context);
-    }
-
-    //open Database
-    public void open(){
-        mDatabase = mDBOpenHelper.getWritableDatabase();
-    }
-
-    //close Database
-    public void close(){
-        mDatabase.close();
+    public DogDataSource(SQLiteDatabase database) {
+        mDatabase = database;
     }
 
     //Create Dog
-    public void insertDog(Dog dog){
-        mDatabase.beginTransaction();
-
-        try {
+    public long insertDog(Dog dog){
             ContentValues values = new ContentValues();
-            values.put(DBOpenHelper.COLUMN_NAME, dog.getName());
-            values.put(DBOpenHelper.COLUMN_AGE, dog.getAge());
-            values.put(DBOpenHelper.COLUMN_BREED, dog.getBreed());
-            mDatabase.insert(DBOpenHelper.TABLE_DOG, null, values);
-            mDatabase.setTransactionSuccessful();
-        }finally {
-            mDatabase.endTransaction();
-        }
+            values.put(DBOpenHelper.DOG_COLUMN_NAME, dog.getName());
+            values.put(DBOpenHelper.DOG_COLUMN_AGE, dog.getAge());
+            values.put(DBOpenHelper.DOG_COLUMN_BREED, dog.getBreed());
+            values.put(DBOpenHelper.DOG_COLUMN_PERSON_ID, dog.getOwnerId());
+
+        return mDatabase.insert(DBOpenHelper.TABLE_DOG, null, values);
+
     }
 
     //Get all dogs
     public Cursor selectAllDogs(){
         Cursor cursor = mDatabase.query(DBOpenHelper.TABLE_DOG,
                 new String[]{
-                        DBOpenHelper.COLUMN_ID,
-                        DBOpenHelper.COLUMN_NAME,
-                        DBOpenHelper.COLUMN_BREED,
-                        DBOpenHelper.COLUMN_AGE},
+                        DBOpenHelper.DOG_COLUMN_ID,
+                        DBOpenHelper.DOG_COLUMN_NAME,
+                        DBOpenHelper.DOG_COLUMN_BREED,
+                        DBOpenHelper.DOG_COLUMN_AGE,
+                        DBOpenHelper.DOG_COLUMN_PERSON_ID},
                 null, // Where clause
                 null, //Where Params
                 null, //GroupBy
                 null, //Having
-                null //OrderBy
-                );
+                null  //OrderBy
+        );
 
         return cursor;
     }

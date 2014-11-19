@@ -1,14 +1,18 @@
 package com.flatironschool.codedemosqlite;
 
-import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.flatironschool.codedemosqlite.Models.Dog;
+import com.flatironschool.codedemosqlite.Models.Person;
 import com.flatironschool.codedemosqlite.db.DBOpenHelper;
 import com.flatironschool.codedemosqlite.db.DogDataSource;
+import com.flatironschool.codedemosqlite.db.PersonDataSource;
+import com.flatironschool.codedemosqlite.db.UnitOfWork.SQLiteUnitOfWork;
+import com.flatironschool.codedemosqlite.db.UnitOfWork.UnitOfWork;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,58 +20,64 @@ import java.util.List;
 
 public class DogActivity extends ActionBarActivity {
 
-    private DogDataSource mDataSource;
+    private PersonDataSource mPersonDataSource;
+    private DogDataSource mDogDataSource;
+
+    private SQLiteUnitOfWork mUnitOfWork;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person);
 
-        mDataSource = new DogDataSource(this);
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-
-        mDataSource.close();
+        mUnitOfWork = null;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mDataSource.open();
+        Dog dog1 = new Dog("Fido", 2, "Border Collie");
+        Dog dog2 = new Dog("Billy", 3, "Phoenix");
+        Dog dog3 = new Dog("Brandy", 4, "Husky");
 
-        mDataSource.insertDog(new Dog("Fido", 2, "Collie"));
-
-        Cursor cursor = mDataSource.selectAllDogs();
-
-        List<Dog> dogs = new ArrayList<Dog>();
-
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            int nameIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_NAME);
-            int ageIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_AGE);
-            int breedIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_BREED);
-            int idIndex = cursor.getColumnIndex(DBOpenHelper.COLUMN_ID);
-
-            String name = cursor.getString(nameIndex);
-            int age = cursor.getInt(ageIndex);
-            String breed = cursor.getString(breedIndex);
-            int id = cursor.getInt(idIndex);
-
-            Dog dog = new Dog(name, age, breed, id);
-            dogs.add(dog);
-
-            cursor.moveToNext();
-        }
+        final List<Dog> dogs = new ArrayList<Dog>();
+        dogs.add(dog1);
+        dogs.add(dog2);
+        dogs.add(dog3);
 
 
+        final Person al = new Person("Al", 27, "11 Broadway, NY, NY");
+
+        mUnitOfWork = new SQLiteUnitOfWork(new DBOpenHelper(this));
 
 
+        mUnitOfWork.startTransaction(new UnitOfWork.Transaction() {
+            @Override
+            public void execute() {
+                PersonDataSource personDataSource = new PersonDataSource(mUnitOfWork.getDatabase());
+                DogDataSource dogDataSource = new DogDataSource(mUnitOfWork.getDatabase());
+                personDataSource.insertPerson(al);
+
+                for (Dog dog: dogs){
+                    dog.setOwnerId(al.getId());
+                    dogDataSource.insertDog(dog);
+                }
+            }
+        }).commit();
+
+//        mUnitOfWork.startTransaction(new UnitOfWork.Transaction() {
+//            @Override
+//            public void execute() {
+//                PersonDataSource personDataSource = new PersonDataSource(mUnitOfWork.getDatabase());
+//            }
+//        }).commit();
     }
 
     @Override
